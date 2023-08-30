@@ -21,16 +21,16 @@ const io: Server = new Server(httpServer, {
 });
 
 io.on('connection', (socket: any) => {
-  console.log('Новый клиент подключился');
+  console.log('Новый клиент подключился', socket.id);
 
-  // todo временное решение
-  const user: User = {
-    id: socket.id,
-    username: 'Kek Kekovich',
-    currentRoom: null,
-  };
-  users[socket.id] = user;
-  console.log(`Пользователь ${user.username} зарегистрирован`);
+  // // todo временное решение
+  // const user: User = {
+  //   id: socket.id,
+  //   username: 'Kek Kekovich',
+  //   currentRoom: null,
+  // };
+  // users[socket.id] = user;
+  // console.log(`Пользователь ${user.username} зарегистрирован`);
 
   // Обработчик события регистрации пользователя
   socket.on('registerUser', (username: string) => {
@@ -40,7 +40,7 @@ io.on('connection', (socket: any) => {
   // Обработчик события получения списка комнат
   socket.on('getRooms', () => {
     // Отправляем список комнат обратно клиенту
-    socket.emit('roomsList', Object.keys(rooms));
+    socket.emit('roomsList', rooms);
   });
   
   // создание комнаты
@@ -55,7 +55,7 @@ io.on('connection', (socket: any) => {
 
   // выход из комнаты
   socket.on('leaveRoom', () => {
-    leaveRoom(socket);
+    leaveRoom(io, socket);
   });
 
   socket.on('message', (message: string) => {
@@ -66,7 +66,7 @@ io.on('connection', (socket: any) => {
 
   socket.on('disconnect', () => {
     const user = users[socket.id];
-    const roomName = user.currentRoom;
+    const roomName = user?.currentRoom;
     // чистка комнаты от пользователя
     if (roomName) {
       const room = rooms[roomName];

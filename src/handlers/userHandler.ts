@@ -9,5 +9,6 @@ export const registerUser = (socket: Socket, username: string) => {
     currentRoom: null,
   };
   users[socket.id] = user;
+  console.log('users', users);
   console.log(`Пользователь ${user.username} зарегистрирован`);
 };
